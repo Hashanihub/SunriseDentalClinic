@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Appointments</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar (same as dashboard) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html" class="active"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Appointment Management</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="action-bar">
+                <div class="filter-group">
+                    <input type="date" id="filterDate">
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="NO_SHOW">No Show</option>
+                    </select>
+                    <button onclick="loadAppointments()">Filter</button>
+                </div>
+                <button class="btn-primary" onclick="openAppointmentModal()">+ Create Appointment</button>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Appointments</h3>
+                    <span id="appointmentCount">0 appointments</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="appointmentsTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Dentist</th>
+                            <th>Treatment</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                        <tr><td colspan="8" class="text-center">Loading appointments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Modal -->
+<div class="modal" id="appointmentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Create Appointment</h3>
+            <button class="close-btn" onclick="closeAppointmentModal()">&times;</button>
+        </div>
+        <form id="appointmentForm">
+            <input type="hidden" id="appointmentId">
+            <div class="form-group">
+                <label>Patient Number *</label>
+                <input type="text" id="patientNumber" placeholder="e.g., P0001" required>
+                <small>Enter existing patient number</small>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Dentist *</label>
+                    <select id="dentistId" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Treatment *</label>
+                    <select id="treatmentId" required></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="appointmentDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Time *</label>
+                    <input type="time" id="appointmentTime" required min="08:00" max="18:00" step="900">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="appointmentNotes" rows="2"></textarea>
+            </div>
+            <div id="appointmentFormError" class="error-message" style="display:none;"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAppointmentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/appointments.js"></script>
+</body>
+</html>

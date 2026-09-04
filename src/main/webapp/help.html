@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Help</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">&#9728;</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>&#128202;</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>&#128100;</span> Patients</a></li>
+            <li><a href="appointments.html"><span>&#128197;</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>&#128269;</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>&#129440;</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>&#128138;</span> Treatments</a></li>
+            <li><a href="billing.html"><span>&#128176;</span> Billing</a></li>
+            <li><a href="reports.html"><span>&#128200;</span> Reports</a></li>
+            <li><a href="help.html" class="active"><span>&#10067;</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>&#128682;</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>&#10067; Help Center</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="help-container">
+                <!-- Getting Started -->
+                <div class="help-section">
+                    <h3>&#128203; Getting Started</h3>
+                    <div class="help-item">
+                        <h4>1. How to Login</h4>
+                        <p>Enter your username and password on the login page. Default credentials:</p>
+                        <ul>
+                            <li><strong>Admin:</strong> admin / admin123</li>
+                            <li><strong>Receptionist:</strong> receptionist / rec123</li>
+                            <li><strong>Dentist:</strong> dentist / dent123</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Patient Management -->
+                <div class="help-section">
+                    <h3>&#128100; Patient Management</h3>
+                    <div class="help-item">
+                        <h4>2. Register a Patient</h4>
+                        <ol>
+                            <li>Go to <strong>Patients</strong> page</li>
+                            <li>Click <strong>"Register Patient"</strong> button</li>
+                            <li>Fill in patient details (Name and Contact are required)</li>
+                            <li>Click <strong>"Save Patient"</strong></li>
+                        </ol>
+                    </div>
+                    <div class="help-item">
+                        <h4>3. Search Patients</h4>
+                        <p>Use the search box on the Patients page to search by name.</p>
+                    </div>
+                </div>
+
+                <!-- Appointment Management -->
+                <div class="help-section">
+                    <h3>&#128197; Appointment Management</h3>
+                    <div class="help-item">
+                        <h4>4. Create an Appointment</h4>
+                        <ol>
+                            <li>Go to <strong>Appointments</strong> page</li>
+                            <li>Click <strong>"Create Appointment"</strong></li>
+                            <li>Enter Patient Number (e.g., P0001)</li>
+                            <li>Select Dentist, Treatment, Date and Time</li>
+                            <li>Click <strong>"Save Appointment"</strong></li>
+                        </ol>
+                    </div>
+                    <div class="help-item">
+                        <h4>5. Search an Appointment</h4>
+                        <ol>
+                            <li>Go to <strong>Search Appointment</strong> page</li>
+                            <li>Enter Appointment Number (e.g., A0001)</li>
+                            <li>Click <strong>Search</strong></li>
+                        </ol>
+                    </div>
+                    <div class="help-item">
+                        <h4>6. Update Appointment Status</h4>
+                        <p>Click the status dropdown on the appointment row and select new status.</p>
+                    </div>
+                </div>
+
+                <!-- Billing -->
+                <div class="help-section">
+                    <h3>&#128176; Billing</h3>
+                    <div class="help-item">
+                        <h4>7. Generate a Bill</h4>
+                        <ol>
+                            <li>Go to <strong>Billing</strong> page</li>
+                            <li>Enter Appointment Number</li>
+                            <li>Add discount if applicable</li>
+                            <li>Click <strong>"Generate Bill"</strong></li>
+                        </ol>
+                    </div>
+                    <div class="help-item">
+                        <h4>8. Print a Bill</h4>
+                        <p>After generating a bill, click <strong>"Print Bill"</strong> button.</p>
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div class="help-section">
+                    <h3>&#128200; Reports</h3>
+                    <div class="help-item">
+                        <h4>9. View Reports</h4>
+                        <ol>
+                            <li>Go to <strong>Reports</strong> page</li>
+                            <li>Select the report type from tabs</li>
+                            <li>Select date range or filters</li>
+                            <li>Click <strong>"Load"</strong></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <div class="help-section">
+                    <h3>&#128682; Logout</h3>
+                    <div class="help-item">
+                        <h4>10. Logout</h4>
+                        <p>Click <strong>"Logout"</strong> in the sidebar to safely logout.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

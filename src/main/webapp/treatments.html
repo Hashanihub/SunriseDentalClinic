@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Treatments</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html" class="active"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Treatment Management</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="action-bar">
+                <div class="search-box">
+                    <input type="text" id="searchTreatment" placeholder="Search by name...">
+                    <button onclick="searchTreatments()">🔍 Search</button>
+                </div>
+                <button class="btn-primary" onclick="openTreatmentModal()" id="addTreatmentBtn">+ Add Treatment</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>All Treatments</h3>
+                    <span id="treatmentCount">0 treatments</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="treatmentsTable">
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Treatment Cost</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="treatmentsTableBody">
+                        <tr><td colspan="7" class="text-center">Loading treatments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Treatment Modal -->
+<div class="modal" id="treatmentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="treatmentModalTitle">Add Treatment</h3>
+            <button class="close-btn" onclick="closeTreatmentModal()">&times;</button>
+        </div>
+        <form id="treatmentForm">
+            <input type="hidden" id="treatmentId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Treatment Code *</label>
+                    <input type="text" id="treatmentCode" placeholder="e.g., T001" required>
+                </div>
+                <div class="form-group">
+                    <label>Treatment Name *</label>
+                    <input type="text" id="treatmentName" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="treatmentDescription" rows="2"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Treatment Cost (LKR) *</label>
+                    <input type="number" id="treatmentCost" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Consultation Fee (LKR)</label>
+                    <input type="number" id="treatmentConsultationFee" step="0.01" value="0">
+                </div>
+            </div>
+            <div id="treatmentFormError" class="error-message" style="display:none;"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeTreatmentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Treatment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/treatments.js"></script>
+</body>
+</html>

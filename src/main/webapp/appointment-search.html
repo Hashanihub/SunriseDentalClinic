@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Search Appointment</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html" class="active"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Search Appointment</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Search Box -->
+            <div class="search-container">
+                <div class="search-box-large">
+                    <input type="text" id="searchAppointmentNumber" placeholder="Enter Appointment Number (e.g., A0001)" onkeypress="if(event.key==='Enter') searchAppointment()">
+                    <button class="btn-primary" onclick="searchAppointment()">🔍 Search</button>
+                </div>
+            </div>
+
+            <!-- Appointment Details Result -->
+            <div id="searchResult" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Appointment Details</h3>
+                        <span class="status-badge" id="resultStatus">SCHEDULED</span>
+                    </div>
+                    <div class="appointment-details">
+                        <div class="detail-row">
+                            <div class="detail-item">
+                                <label>Appointment Number</label>
+                                <span id="resultNumber">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Date</label>
+                                <span id="resultDate">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Time</label>
+                                <span id="resultTime">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-item">
+                                <label>Patient</label>
+                                <span id="resultPatient">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Patient ID</label>
+                                <span id="resultPatientId">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Contact</label>
+                                <span id="resultContact">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-item">
+                                <label>Dentist</label>
+                                <span id="resultDentist">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Treatment</label>
+                                <span id="resultTreatment">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Notes</label>
+                                <span id="resultNotes">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-primary" onclick="window.location.href='billing.html?appointment=' + document.getElementById('resultNumber').textContent">💰 Generate Bill</button>
+                        <button class="btn-secondary" onclick="clearSearch()">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Found -->
+            <div id="notFound" class="empty-state" style="display:none;">
+                <div class="empty-icon">🔍</div>
+                <h3>Appointment Not Found</h3>
+                <p>Please check the appointment number and try again.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/appointments.js"></script>
+</body>
+</html>

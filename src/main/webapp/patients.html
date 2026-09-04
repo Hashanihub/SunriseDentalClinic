@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Patients</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar (same as dashboard) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html" class="active"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Patient Management</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <div class="search-box">
+                    <input type="text" id="searchPatient" placeholder="Search by name...">
+                    <button onclick="searchPatients()">🔍 Search</button>
+                </div>
+                <button class="btn-primary" onclick="openPatientModal()">+ Register Patient</button>
+            </div>
+
+            <!-- Patients Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>All Patients</h3>
+                    <span id="patientCount">0 patients</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="patientsTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                        <tr><td colspan="6" class="text-center">Loading patients...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Modal -->
+<div class="modal" id="patientModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Register Patient</h3>
+            <button class="close-btn" onclick="closePatientModal()">&times;</button>
+        </div>
+        <form id="patientForm">
+            <input type="hidden" id="patientId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Number *</label>
+                    <input type="text" id="contactNumber" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="address" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="dateOfBirth">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="">Select</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="notes" rows="2"></textarea>
+            </div>
+            <div id="patientFormError" class="error-message" style="display:none;"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closePatientModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Patient</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/patients.js"></script>
+</body>
+</html>

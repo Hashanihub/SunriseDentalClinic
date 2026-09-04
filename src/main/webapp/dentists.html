@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Dentists</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar (same) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html" class="active"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Dentist Management</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="action-bar">
+                <div class="search-box">
+                    <input type="text" id="searchDentist" placeholder="Search by name...">
+                    <button onclick="searchDentists()">🔍 Search</button>
+                </div>
+                <button class="btn-primary" onclick="openDentistModal()" id="addDentistBtn">+ Add Dentist</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>All Dentists</h3>
+                    <span id="dentistCount">0 dentists</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="dentistsTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Contact</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="dentistsTableBody">
+                        <tr><td colspan="7" class="text-center">Loading dentists...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dentist Modal -->
+<div class="modal" id="dentistModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="dentistModalTitle">Add Dentist</h3>
+            <button class="close-btn" onclick="closeDentistModal()">&times;</button>
+        </div>
+        <form id="dentistForm">
+            <input type="hidden" id="dentistId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="dentistFullName" required>
+                </div>
+                <div class="form-group">
+                    <label>Specialization</label>
+                    <input type="text" id="dentistSpecialization" placeholder="e.g., Orthodontist">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" id="dentistContact">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="dentistEmail">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Consultation Fee (LKR)</label>
+                    <input type="number" id="dentistFee" step="0.01" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="dentistStatus">
+                        <option value="AVAILABLE">Available</option>
+                        <option value="BUSY">Busy</option>
+                        <option value="ON_LEAVE">On Leave</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="dentistNotes" rows="2"></textarea>
+            </div>
+            <div id="dentistFormError" class="error-message" style="display:none;"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeDentistModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Dentist</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dentists.js"></script>
+</body>
+</html>

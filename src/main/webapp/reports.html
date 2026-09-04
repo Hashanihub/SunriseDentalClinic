@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Reports</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html" class="active"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Reports</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Report Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showReport('daily')">📅 Daily Appointments</button>
+                <button class="tab-btn" onclick="showReport('dentist')">🦷 Dentist Report</button>
+                <button class="tab-btn" onclick="showReport('revenue')">💰 Revenue Report</button>
+                <button class="tab-btn" onclick="showReport('payment')">💳 Payment Report</button>
+                <button class="tab-btn" onclick="showReport('patient')">👤 Patient Report</button>
+            </div>
+
+            <!-- Daily Appointments Report -->
+            <div id="dailyReport" class="report-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Daily Appointments</h3>
+                        <div class="report-controls">
+                            <input type="date" id="dailyDate" value="2024-01-15">
+                            <button class="btn-sm" onclick="loadDailyReport()">Load</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="dailyReportTable">
+                            <thead>
+                            <tr><th>#</th><th>Patient</th><th>Dentist</th><th>Treatment</th><th>Time</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="dailyReportBody"><tr><td colspan="6" class="text-center">Select date to load</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dentist Report -->
+            <div id="dentistReport" class="report-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Dentist Appointment Report</h3>
+                        <div class="report-controls">
+                            <select id="dentistSelect"></select>
+                            <input type="date" id="dentistStartDate">
+                            <input type="date" id="dentistEndDate">
+                            <button class="btn-sm" onclick="loadDentistReport()">Load</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="dentistReportTable">
+                            <thead>
+                            <tr><th>#</th><th>Patient</th><th>Treatment</th><th>Date</th><th>Time</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="dentistReportBody"><tr><td colspan="6" class="text-center">Select dentist and dates to load</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Report -->
+            <div id="revenueReport" class="report-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Revenue Report</h3>
+                        <div class="report-controls">
+                            <input type="date" id="revenueStartDate">
+                            <input type="date" id="revenueEndDate">
+                            <button class="btn-sm" onclick="loadRevenueReport()">Load</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="revenueReportTable">
+                            <thead>
+                            <tr><th>Treatment</th><th>Count</th><th>Revenue</th></tr>
+                            </thead>
+                            <tbody id="revenueReportBody"><tr><td colspan="3" class="text-center">Select dates to load</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Report -->
+            <div id="paymentReport" class="report-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Payment Report</h3>
+                        <div class="report-controls">
+                            <input type="date" id="paymentStartDate">
+                            <input type="date" id="paymentEndDate">
+                            <button class="btn-sm" onclick="loadPaymentReport()">Load</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="paymentReportTable">
+                            <thead>
+                            <tr><th>Bill #</th><th>Patient</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                            </thead>
+                            <tbody id="paymentReportBody"><tr><td colspan="5" class="text-center">Select dates to load</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Report -->
+            <div id="patientReport" class="report-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Patient Report</h3>
+                        <div class="report-controls">
+                            <input type="date" id="patientStartDate">
+                            <input type="date" id="patientEndDate">
+                            <button class="btn-sm" onclick="loadPatientReport()">Load</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="patientReportTable">
+                            <thead>
+                            <tr><th>Patient #</th><th>Name</th><th>Contact</th><th>Registered</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="patientReportBody"><tr><td colspan="5" class="text-center">Select dates to load</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/reports.js"></script>
+</body>
+</html>

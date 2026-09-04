@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Dental Clinic - Billing</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">☀️</span>
+            <span>Sunrise Dental</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+            <li><a href="patients.html"><span>👤</span> Patients</a></li>
+            <li><a href="appointments.html"><span>📅</span> Appointments</a></li>
+            <li><a href="appointment-search.html"><span>🔍</span> Search Appointment</a></li>
+            <li><a href="dentists.html"><span>🦷</span> Dentists</a></li>
+            <li><a href="treatments.html"><span>💊</span> Treatments</a></li>
+            <li><a href="billing.html" class="active"><span>💰</span> Billing</a></li>
+            <li><a href="reports.html"><span>📈</span> Reports</a></li>
+            <li><a href="help.html"><span>❓</span> Help</a></li>
+            <li><a href="#" id="logoutBtn"><span>🚪</span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Billing</h2>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="role-badge" id="userRole">Loading...</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Generate Bill Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Generate Bill</h3>
+                </div>
+                <div class="card-body">
+                    <form id="billForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Appointment Number *</label>
+                                <input type="text" id="billAppointmentNumber" placeholder="e.g., A0001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Discount (LKR)</label>
+                                <input type="number" id="billDiscount" step="0.01" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Tax (LKR)</label>
+                                <input type="number" id="billTax" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div id="billError" class="error-message" style="display:none;"></div>
+                        <button type="submit" class="btn-primary">Generate Bill</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bill Result -->
+            <div id="billResult" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Bill Details</h3>
+                        <span class="status-badge" id="billStatus">UNPAID</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="bill-details-grid">
+                            <div><strong>Bill Number:</strong> <span id="billNumber">-</span></div>
+                            <div><strong>Date:</strong> <span id="billDate">-</span></div>
+                            <div><strong>Patient:</strong> <span id="billPatient">-</span></div>
+                            <div><strong>Appointment:</strong> <span id="billAppointment">-</span></div>
+                            <div><strong>Dentist:</strong> <span id="billDentist">-</span></div>
+                            <div><strong>Treatment:</strong> <span id="billTreatment">-</span></div>
+                        </div>
+                        <div class="bill-totals">
+                            <div class="total-row"><span>Treatment Cost:</span> <span id="billTreatmentCost">0.00</span></div>
+                            <div class="total-row"><span>Consultation Fee:</span> <span id="billConsultFee">0.00</span></div>
+                            <div class="total-row"><span>Subtotal:</span> <span id="billSubtotal">0.00</span></div>
+                            <div class="total-row"><span>Discount:</span> <span id="billDiscountDisplay">0.00</span></div>
+                            <div class="total-row"><span>Tax:</span> <span id="billTaxDisplay">0.00</span></div>
+                            <div class="total-row grand-total"><span>Total:</span> <span id="billTotal">0.00</span></div>
+                            <div class="total-row"><span>Paid:</span> <span id="billPaid">0.00</span></div>
+                            <div class="total-row"><span>Balance:</span> <span id="billBalance">0.00</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-primary" onclick="printBill()">🖨️ Print Bill</button>
+                            <button class="btn-secondary" onclick="processPayment()">💰 Process Payment</button>
+                            <button class="btn-secondary" onclick="clearBill()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Process Payment</h3>
+            <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+        </div>
+        <form id="paymentForm">
+            <input type="hidden" id="paymentBillId">
+            <div class="form-group">
+                <label>Amount (LKR) *</label>
+                <input type="number" id="paymentAmount" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="paymentMethod">
+                    <option value="CASH">Cash</option>
+                    <option value="CARD">Card</option>
+                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                    <option value="INSURANCE">Insurance</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Reference Number</label>
+                <input type="text" id="paymentReference" placeholder="Optional">
+            </div>
+            <div id="paymentError" class="error-message" style="display:none;"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closePaymentModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Process Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/billing.js"></script>
+</body>
+</html>

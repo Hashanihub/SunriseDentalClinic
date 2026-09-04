@@ -1,0 +1,83 @@
+name: CI/CD Pipeline - Sunrise Dental Clinic
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sunrise_dental_db
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Setup MySQL
+        run: |
+          mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS sunrise_dental_db;"
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/01_create_database.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/02_create_tables.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/03_insert_sample_data.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/04_constraints_and_indexes.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/05_views.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/06_stored_procedures.sql
+          mysql -h 127.0.0.1 -u root -proot sunrise_dental_db < database/07_triggers.sql
+
+      - name: Build with Maven
+        run: mvn clean compile -DskipTests
+
+      - name: Run Tests
+        run: mvn test
+        env:
+          DB_URL: jdbc:mysql://127.0.0.1:3306/sunrise_dental_db?useSSL=false&serverTimezone=Asia/Colombo
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+      - name: Generate Test Report
+        run: mvn surefire-report:report
+        if: always()
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: target/surefire-reports/
+
+      - name: Package WAR
+        run: mvn package -DskipTests
+
+      - name: Upload WAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunrise-dental-clinic
+          path: target/sunrise-dental-clinic.war
+
+      - name: Build Status Badge
+        run: echo "✅ Build Successful - WAR file generated!"
