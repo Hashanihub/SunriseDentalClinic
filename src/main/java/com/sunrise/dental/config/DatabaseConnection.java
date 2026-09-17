@@ -91,11 +91,8 @@ public class DatabaseConnection {
      * @return true if connection is successful
      */
     public boolean testConnection() {
-        try (Connection conn = getConnection()) {
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
             return conn != null && !conn.isClosed();
-        } catch (DatabaseException e) {
-            logger.error("Database connection test failed", e);
-            return false;
         } catch (SQLException e) {
             logger.error("Database connection test failed", e);
             return false;

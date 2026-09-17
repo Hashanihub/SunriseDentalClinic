@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunrise Dental Clinic - Treatments</title>
+    <title>Sunrise Dental Clinic - User Management</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -35,9 +35,9 @@
     <!-- Main Content -->
     <div class="main-content">
         <header class="top-header">
-            <h2>Treatment Management</h2>
+            <h2>&#128101; User Management</h2>
             <div class="user-info">
-                <span id="userName">Loading...</span>
+                <span>Loading...</span>
                 <span class="role-badge" id="userRole">Loading...</span>
             </div>
         </header>
@@ -45,32 +45,32 @@
         <div class="content-area">
             <div class="action-bar">
                 <div class="search-box">
-                    <input type="text" id="searchTreatment" placeholder="Search by name...">
-                    <button onclick="searchTreatments()">🔍 Search</button>
+                    <input type="text" id="searchUser" placeholder="Search by username...">
+                    <button onclick="searchUsers()">&#128269; Search</button>
                 </div>
-                <button class="btn-primary" onclick="openTreatmentModal()" id="addTreatmentBtn">+ Add Treatment</button>
+                <button class="btn-primary" onclick="openUserModal()">+ Add User</button>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <h3>All Treatments</h3>
-                    <span id="treatmentCount">0 treatments</span>
+                    <h3>All Users</h3>
+                    <span id="userCount">0 users</span>
                 </div>
                 <div class="table-container">
-                    <table class="data-table" id="treatmentsTable">
+                    <table class="data-table">
                         <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Treatment Cost</th>
-                            <th>Consultation Fee</th>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
-                        <tbody id="treatmentsTableBody">
-                        <tr><td colspan="7" class="text-center">Loading treatments...</td></tr>
+                        <tbody id="usersTableBody">
+                        <tr><td colspan="7" class="text-center">Loading users...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -79,43 +79,45 @@
     </div>
 </div>
 
-<!-- Treatment Modal -->
-<div class="modal" id="treatmentModal">
+<!-- User Modal -->
+<div class="modal" id="userModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="treatmentModalTitle">Add Treatment</h3>
-            <button class="close-btn" onclick="closeTreatmentModal()">&times;</button>
+            <h3 id="userModalTitle">Add User</h3>
+            <button class="close-btn" onclick="closeUserModal()">&times;</button>
         </div>
-        <form id="treatmentForm">
-            <input type="hidden" id="treatmentId">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Treatment Code *</label>
-                    <input type="text" id="treatmentCode" placeholder="e.g., T001" required>
-                </div>
-                <div class="form-group">
-                    <label>Treatment Name *</label>
-                    <input type="text" id="treatmentName" required>
-                </div>
+        <form id="userForm">
+            <input type="hidden" id="userId">
+            <div class="form-group">
+                <label>Username *</label>
+                <input type="text" id="username" required>
             </div>
             <div class="form-group">
-                <label>Description</label>
-                <textarea id="treatmentDescription" rows="2"></textarea>
+                <label>Full Name *</label>
+                <input type="text" id="fullName" required>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Treatment Cost (LKR) *</label>
-                    <input type="number" id="treatmentCost" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Consultation Fee (LKR)</label>
-                    <input type="number" id="treatmentConsultationFee" step="0.01" value="0">
-                </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email">
             </div>
-            <div id="treatmentFormError" class="error-message" style="display:none;"></div>
+            <div class="form-group">
+                <label>Role *</label>
+                <select id="role" required>
+                    <option value="">Select Role</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="RECEPTIONIST">Receptionist</option>
+                    <option value="DENTIST">Dentist</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Password (default: password123)</label>
+                <input type="text" id="password" value="password123" readonly>
+                <small>Default password will be set. User can change it later.</small>
+            </div>
+            <div id="userFormError" class="error-message" style="display:none;"></div>
             <div class="modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeTreatmentModal()">Cancel</button>
-                <button type="submit" class="btn-primary">Save Treatment</button>
+                <button type="button" class="btn-secondary" onclick="closeUserModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save User</button>
             </div>
         </form>
     </div>
@@ -123,6 +125,6 @@
 
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
-<script src="js/treatments.js"></script>
+<script src="js/users.js"></script>
 </body>
 </html>

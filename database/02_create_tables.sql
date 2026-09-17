@@ -1,13 +1,3 @@
--- ================================================
--- Sunrise Dental Clinic Management System
--- Tables Creation Script
--- ================================================
-
-USE sunrise_dental_db;
-
--- ================================================
--- 1. USERS TABLE (For authentication)
--- ================================================
 CREATE TABLE users (
                        user_id INT AUTO_INCREMENT PRIMARY KEY,
                        username VARCHAR(50) UNIQUE NOT NULL,
@@ -21,10 +11,6 @@ CREATE TABLE users (
                        INDEX idx_username (username),
                        INDEX idx_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ================================================
--- 2. PATIENTS TABLE
--- ================================================
 CREATE TABLE patients (
                           patient_id INT AUTO_INCREMENT PRIMARY KEY,
                           patient_number VARCHAR(20) UNIQUE NOT NULL,
@@ -45,9 +31,6 @@ CREATE TABLE patients (
                           CONSTRAINT chk_contact_number CHECK (contact_number REGEXP '^[0-9]{10,15}$')
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ================================================
--- 3. DENTISTS TABLE
--- ================================================
 CREATE TABLE dentists (
                           dentist_id INT AUTO_INCREMENT PRIMARY KEY,
                           dentist_number VARCHAR(20) UNIQUE NOT NULL,
@@ -67,9 +50,6 @@ CREATE TABLE dentists (
                           INDEX idx_availability (availability_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ================================================
--- 4. TREATMENTS TABLE
--- ================================================
 CREATE TABLE treatments (
                             treatment_id INT AUTO_INCREMENT PRIMARY KEY,
                             treatment_code VARCHAR(20) UNIQUE NOT NULL,
@@ -86,9 +66,6 @@ CREATE TABLE treatments (
                             CONSTRAINT chk_consultation_fee CHECK (consultation_fee >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ================================================
--- 5. APPOINTMENTS TABLE
--- ================================================
 CREATE TABLE appointments (
                               appointment_id INT AUTO_INCREMENT PRIMARY KEY,
                               appointment_number VARCHAR(20) UNIQUE NOT NULL,
@@ -117,9 +94,6 @@ CREATE TABLE appointments (
                               UNIQUE KEY unique_dentist_slot (dentist_id, appointment_date, appointment_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ================================================
--- 6. BILLS TABLE
--- ================================================
 CREATE TABLE bills (
                        bill_id INT AUTO_INCREMENT PRIMARY KEY,
                        bill_number VARCHAR(20) UNIQUE NOT NULL,
@@ -148,9 +122,6 @@ CREATE TABLE bills (
                        INDEX idx_payment_status (payment_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ================================================
--- 7. PAYMENTS TABLE
--- ================================================
 CREATE TABLE payments (
                           payment_id INT AUTO_INCREMENT PRIMARY KEY,
                           payment_number VARCHAR(20) UNIQUE NOT NULL,

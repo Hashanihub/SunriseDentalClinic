@@ -68,7 +68,10 @@ public class AuthenticationFilter implements Filter {
                     "/patients.html",
                     "/dentists.html",
                     "/treatments.html",
-                    "/billing.html"
+                    "/billing.html",
+                    "/reports.html",
+                    "/help.html",
+                    "/appointments.html"
             );
 
             for (String restricted : restrictedPages) {
@@ -85,7 +88,8 @@ public class AuthenticationFilter implements Filter {
                     "/api/patients",
                     "/api/dentists",
                     "/api/treatments",
-                    "/api/bills"
+                    "/api/bills",
+                    "/api/reports"
             );
 
             for (String restricted : restrictedApi) {
@@ -97,10 +101,36 @@ public class AuthenticationFilter implements Filter {
                 }
             }
 
-            // ----- APPOINTMENT API - Allowed (filter in controller) -----
-            if (requestURI.contains("/api/appointments")) {
+            // ✅ Dentist CANNOT create appointments
+            if (requestURI.contains("/api/appointments") &&
+                    httpRequest.getMethod().equals("POST")) {
+                httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                httpResponse.getWriter().write("{\"error\":\"Dentists cannot create appointments.\"}");
+                return;
+            }
+
+            // ✅ Dentist CAN view appointments (GET only)
+            if (requestURI.contains("/api/appointments") &&
+                    httpRequest.getMethod().equals("GET")) {
                 chain.doFilter(request, response);
                 return;
+            }
+            // ============================================================
+// ===== USERS API - ADMIN ONLY =====
+// ============================================================
+            if (requestURI.contains("/api/users") || requestURI.contains("/users.html")) {
+                if (!"ADMIN".equals(userRole)) {
+                    if (requestURI.contains("/api/")) {
+                        httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        httpResponse.setContentType("application/json");
+                        httpResponse.getWriter().write("{\"error\":\"Admin access required.\"}");
+                    } else {
+                        httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        httpResponse.setContentType("text/html");
+                        httpResponse.getWriter().write(getAccessDeniedPage(contextPath));
+                    }
+                    return;
+                }
             }
         }
 

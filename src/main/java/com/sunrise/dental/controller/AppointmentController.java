@@ -49,7 +49,42 @@ public class AppointmentController extends HttpServlet {
         Integer userId = (Integer) session.getAttribute("userId");
 
         try {
-            // ----- GET /api/appointments -----
+            // ============================================================
+            // GET /api/appointments/search?number=xxx
+            // ============================================================
+            if (path != null && path.startsWith("/search")) {
+                String number = request.getParameter("number");
+                if (number == null || number.trim().isEmpty()) {
+                    sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                            "Appointment number is required");
+                    return;
+                }
+
+                try {
+                    Appointment appointment = appointmentService.getAppointmentByNumber(number);
+
+                    // DENTIST: Check if this appointment belongs to them
+                    if ("DENTIST".equals(userRole)) {
+                        Integer dentistId = getDentistIdFromUser(userId);
+                        if (appointment.getDentistId() != dentistId) {
+                            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                                    "You can only view your own appointments.");
+                            return;
+                        }
+                    }
+
+                    sendSuccessResponse(response, appointment);
+
+                } catch (ResourceNotFoundException e) {
+                    sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND,
+                            "Appointment not found. Please check the appointment number.");
+                }
+                return;
+            }
+
+            // ============================================================
+            // GET /api/appointments - Get all appointments with filters
+            // ============================================================
             if (path == null || "/".equals(path)) {
                 String dateParam = request.getParameter("date");
                 String statusParam = request.getParameter("status");
@@ -95,28 +130,9 @@ public class AppointmentController extends HttpServlet {
                 return;
             }
 
-            // ----- GET /api/appointments/search?number=xxx -----
-            if (path.startsWith("/search")) {
-                String number = request.getParameter("number");
-                if (number == null) {
-                    sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Appointment number required");
-                    return;
-                }
-                Appointment appointment = appointmentService.getAppointmentByNumber(number);
-
-                // DENTIST: Check ownership
-                if ("DENTIST".equals(userRole)) {
-                    Integer dentistId = getDentistIdFromUser(userId);
-                    if (appointment.getDentistId() != dentistId) {
-                        sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Not your appointment");
-                        return;
-                    }
-                }
-                sendSuccessResponse(response, appointment);
-                return;
-            }
-
-            // ----- GET /api/appointments/{id} -----
+            // ============================================================
+            // GET /api/appointments/{id} - Get appointment by ID
+            // ============================================================
             String idStr = path.substring(1);
             Appointment appointment;
             try {
@@ -130,7 +146,8 @@ public class AppointmentController extends HttpServlet {
             if ("DENTIST".equals(userRole)) {
                 Integer dentistId = getDentistIdFromUser(userId);
                 if (appointment.getDentistId() != dentistId) {
-                    sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Not your appointment");
+                    sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                            "You can only view your own appointments.");
                     return;
                 }
             }
@@ -154,8 +171,10 @@ public class AppointmentController extends HttpServlet {
         HttpSession session = request.getSession(false);
         String userRole = (String) session.getAttribute("role");
 
+        // DENTIST: Cannot create appointments
         if ("DENTIST".equals(userRole)) {
-            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Dentists cannot create appointments");
+            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                    "Dentists cannot create appointments.");
             return;
         }
 
@@ -198,12 +217,12 @@ public class AppointmentController extends HttpServlet {
             String[] parts = path.substring(1).split("/");
             int id = Integer.parseInt(parts[0]);
 
-            // DENTIST: Check ownership
-            if ("DENTIST".equals(userRole)) {
+            // DENTIST: Can only update status, not full appointment
+            if (!"DENTIST".equals(userRole)) {
+                // Check if appointment exists
                 Appointment existing = appointmentService.getAppointmentById(id);
-                Integer dentistId = getDentistIdFromUser(userId);
-                if (existing.getDentistId() != dentistId) {
-                    sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Not your appointment");
+                if (existing == null) {
+                    sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Appointment not found");
                     return;
                 }
             }
@@ -217,7 +236,8 @@ public class AppointmentController extends HttpServlet {
             // PUT /api/appointments/{id}/reschedule - Only ADMIN/RECEPTIONIST
             if (parts.length > 1 && "reschedule".equals(parts[1])) {
                 if ("DENTIST".equals(userRole)) {
-                    sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Dentists cannot reschedule");
+                    sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                            "Dentists cannot reschedule appointments.");
                     return;
                 }
                 handleReschedule(request, response, id);
@@ -226,7 +246,8 @@ public class AppointmentController extends HttpServlet {
 
             // PUT /api/appointments/{id} - Full update (ADMIN/RECEPTIONIST only)
             if ("DENTIST".equals(userRole)) {
-                sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Dentists cannot update full appointment");
+                sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                        "Dentists cannot update full appointment details.");
                 return;
             }
 
@@ -260,8 +281,10 @@ public class AppointmentController extends HttpServlet {
         HttpSession session = request.getSession(false);
         String userRole = (String) session.getAttribute("role");
 
+        // DENTIST: Cannot cancel appointments
         if ("DENTIST".equals(userRole)) {
-            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, "Dentists cannot cancel appointments");
+            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
+                    "Dentists cannot cancel appointments.");
             return;
         }
 
@@ -274,12 +297,14 @@ public class AppointmentController extends HttpServlet {
         try {
             int id = Integer.parseInt(path.substring(1));
             String reason = request.getParameter("reason");
-            if (reason == null || reason.trim().isEmpty()) reason = "Cancelled by user";
+            if (reason == null || reason.trim().isEmpty()) {
+                reason = "Cancelled by user";
+            }
 
             if (appointmentService.cancelAppointment(id, reason)) {
-                response.getWriter().write("{\"success\":true,\"message\":\"Appointment cancelled\"}");
+                response.getWriter().write("{\"success\":true,\"message\":\"Appointment cancelled successfully\"}");
             } else {
-                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to cancel");
+                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to cancel appointment");
             }
         } catch (NumberFormatException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid ID");
@@ -296,12 +321,15 @@ public class AppointmentController extends HttpServlet {
 
     // ==================== PRIVATE METHODS ====================
 
+    /**
+     * Handle status update - Dentist can only set: COMPLETED, CONFIRMED, NO_SHOW
+     */
     private void handleStatusUpdate(HttpServletRequest request, HttpServletResponse response, int id, String userRole)
             throws IOException {
         try {
             String statusParam = request.getParameter("status");
             if (statusParam == null || statusParam.trim().isEmpty()) {
-                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Status required");
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Status is required");
                 return;
             }
 
@@ -310,19 +338,19 @@ public class AppointmentController extends HttpServlet {
                 List<String> allowed = Arrays.asList("COMPLETED", "CONFIRMED", "NO_SHOW");
                 if (!allowed.contains(statusParam)) {
                     sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
-                            "Dentists can only set: COMPLETED, CONFIRMED, NO_SHOW");
+                            "Dentists can only set status to: COMPLETED, CONFIRMED, NO_SHOW");
                     return;
                 }
             }
 
             AppointmentStatus status = AppointmentStatus.fromString(statusParam);
             if (appointmentService.updateAppointmentStatus(id, status)) {
-                response.getWriter().write("{\"success\":true,\"message\":\"Status updated\"}");
+                response.getWriter().write("{\"success\":true,\"message\":\"Status updated successfully\"}");
             } else {
-                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update");
+                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update status");
             }
         } catch (IllegalArgumentException e) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid status value");
         } catch (ResourceNotFoundException e) {
             sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e.getUserMessage());
         } catch (DatabaseException e) {
@@ -331,19 +359,23 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
+    /**
+     * Handle reschedule - Only ADMIN and RECEPTIONIST
+     */
     private void handleReschedule(HttpServletRequest request, HttpServletResponse response, int id)
             throws IOException {
         try {
             String dateParam = request.getParameter("date");
             String timeParam = request.getParameter("time");
             if (dateParam == null || timeParam == null) {
-                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Date and time required");
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Date and time are required");
                 return;
             }
 
             Appointment rescheduled = appointmentService.rescheduleAppointment(
                     id, LocalDate.parse(dateParam), LocalTime.parse(timeParam));
             sendSuccessResponse(response, rescheduled);
+            logger.info("Appointment rescheduled: {}", rescheduled.getAppointmentNumber());
         } catch (ValidationException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getUserMessage());
         } catch (AppointmentConflictException e) {
@@ -359,9 +391,13 @@ public class AppointmentController extends HttpServlet {
         }
     }
 
+    /**
+     * Get dentist ID from user ID.
+     * In this system, dentist_id = user_id (simplified for demo)
+     */
     private Integer getDentistIdFromUser(Integer userId) {
-        // In real system: SELECT dentist_id FROM dentists WHERE user_id = ?
-        return userId; // For demo: dentist_id = user_id
+        // In production: SELECT dentist_id FROM dentists WHERE user_id = ?
+        return userId;
     }
 
     private void sendSuccessResponse(HttpServletResponse response, Object data) throws IOException {

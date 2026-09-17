@@ -185,10 +185,16 @@ a {
 .sidebar-nav {
     list-style: none;
     padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .sidebar-nav li {
     margin: 2px 10px;
+    list-style: none;
+    display: block;             /* ✅ Block level */
+    width: auto;
 }
 
 .sidebar-nav li a {
@@ -200,6 +206,8 @@ a {
     color: rgba(255,255,255,0.7);
     transition: var(--transition);
     font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .sidebar-nav li a:hover {
@@ -215,6 +223,11 @@ a {
 
 .sidebar-nav li a span:first-child {
     font-size: 18px;
+    min-width: 24px;            /* ✅ Fixed icon width */
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ---------- MAIN CONTENT ---------- */

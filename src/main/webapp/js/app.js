@@ -3,22 +3,25 @@
  * Sunrise Dental Clinic Management System
  */
 
-// Check authentication on page load
+// ==================== INITIALIZATION ====================
+
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     setupLogout();
     setupSidebar();
-    updateMenuBasedOnRole();
 });
 
-// Check if user is authenticated
+// ==================== AUTHENTICATION ====================
+
 async function checkAuth() {
     try {
         const response = await apiGet('/auth/current-user');
         if (response.status === 200 && response.data && response.data.success) {
-            // User is authenticated
+            // User is authenticated - update UI
             updateUserInfo(response.data);
-            updateMenuBasedOnRole();
+
+            // ✅ Wait for role to be set in DOM, then update menu
+            setTimeout(updateMenuBasedOnRole, 200);
             return true;
         } else {
             if (!window.location.pathname.includes('login.html')) {
@@ -35,7 +38,6 @@ async function checkAuth() {
     }
 }
 
-// Update user info in header
 function updateUserInfo(userData) {
     const userNameEl = document.getElementById('userName');
     const userRoleEl = document.getElementById('userRole');
@@ -49,39 +51,96 @@ function updateUserInfo(userData) {
     }
 }
 
-// Update menu based on user role
+// ==================== ROLE-BASED MENU ====================
+
+/**
+ * Update menu items based on user role
+ *
+ * ADMIN:        All items visible (including Users)
+ * RECEPTIONIST: Hide Users, Dentists, Treatments
+ * DENTIST:      Hide everything except Dashboard, Appointment Search
+ */
 function updateMenuBasedOnRole() {
     const roleEl = document.getElementById('userRole');
     if (!roleEl) return;
 
-    const role = roleEl.textContent;
+    const role = roleEl.textContent.trim();
 
-    // Get all menu items that should be hidden for Dentist
-    const dentistRestricted = [
-        'patients.html',
-        'dentists.html',
-        'treatments.html',
-        'billing.html'
-    ];
+    // ✅ Wait until role is loaded
+    if (role === 'Loading...' || role === '' || role === 'User') {
+        setTimeout(updateMenuBasedOnRole, 300);
+        return;
+    }
 
-    // Get all sidebar links
-    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+    console.log('🔐 Updating menu for role:', role);
 
-    sidebarLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (role === 'DENTIST') {
-            // Hide restricted links for Dentist
-            if (dentistRestricted.some(restricted => href && href.includes(restricted))) {
-                link.parentElement.style.display = 'none';
-            }
+    // ✅ STEP 1: Show/Hide ADMIN-ONLY items (Users link)
+    const adminOnlyItems = document.querySelectorAll('.admin-only');
+    adminOnlyItems.forEach(item => {
+        if (role === 'ADMIN') {
+            item.style.display = ''; // Show for Admin
         } else {
-            // Show all links for ADMIN and RECEPTIONIST
-            link.parentElement.style.display = '';
+            item.style.display = 'none'; // Hide for Dentist & Receptionist
         }
     });
+
+    // ✅ STEP 2: Reset all sidebar items (so we can re-apply restrictions)
+    const sidebarItems = document.querySelectorAll('.sidebar-nav li');
+    sidebarItems.forEach(li => {
+        // Don't reset admin-only items (they were set in step 1)
+        if (!li.classList.contains('admin-only')) {
+            li.style.display = '';
+        }
+    });
+
+    // ✅ STEP 3: Apply DENTIST restrictions
+    if (role === 'DENTIST') {
+        const dentistRestricted = [
+            'patients.html',
+            'dentists.html',
+            'treatments.html',
+            'billing.html',
+            'reports.html',
+            'appointments.html',
+            'help.html',
+            'users.html'
+        ];
+
+        sidebarItems.forEach(li => {
+            const link = li.querySelector('a');
+            if (link) {
+                const href = link.getAttribute('href');
+                if (href && dentistRestricted.some(r => href.includes(r))) {
+                    li.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // ✅ STEP 4: Apply RECEPTIONIST restrictions
+    if (role === 'RECEPTIONIST') {
+        const receptionistRestricted = [
+            'users.html',
+            'dentists.html',
+            'treatments.html'
+        ];
+
+        sidebarItems.forEach(li => {
+            const link = li.querySelector('a');
+            if (link) {
+                const href = link.getAttribute('href');
+                if (href && receptionistRestricted.some(r => href.includes(r))) {
+                    li.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // ✅ ADMIN: No restrictions - all items visible
 }
 
-// Setup logout button
+// ==================== LOGOUT ====================
+
 function setupLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
@@ -94,22 +153,17 @@ function setupLogout() {
     }
 }
 
-// Logout function
 async function logout() {
     try {
-        const response = await apiPost('/auth/logout');
-        if (response.status === 200) {
-            window.location.href = 'login.html';
-        } else {
-            alert('Logout failed. Please try again.');
-        }
+        await apiPost('/auth/logout');
     } catch (error) {
         console.error('Logout error:', error);
-        window.location.href = 'login.html';
     }
+    window.location.href = 'login.html';
 }
 
-// Setup sidebar navigation
+// ==================== SIDEBAR ====================
+
 function setupSidebar() {
     const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
     sidebarLinks.forEach(link => {
@@ -120,45 +174,59 @@ function setupSidebar() {
     });
 }
 
-// Format date for display
+// ==================== FORMATTING HELPERS ====================
+
 function formatDate(dateString) {
     if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-LK', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        return date.toLocaleDateString('en-LK', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return dateString;
+    }
 }
 
-// Format date for input
 function formatDateInput(dateString) {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        return date.toISOString().split('T')[0];
+    } catch (e) {
+        return '';
+    }
 }
 
-// Format time for display
 function formatTime(timeString) {
     if (!timeString) return '-';
-    const parts = timeString.split(':');
-    if (parts.length >= 2) {
-        const hour = parseInt(parts[0]);
-        const minute = parts[1];
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12;
-        return `${hour12}:${minute} ${ampm}`;
+    try {
+        const str = String(timeString);
+        if (str === 'null' || str === 'undefined' || str === '') return '-';
+        const parts = str.split(':');
+        if (parts.length >= 2) {
+            const hour = parseInt(parts[0]);
+            const minute = parts[1];
+            if (isNaN(hour)) return str;
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minute} ${ampm}`;
+        }
+        return str;
+    } catch (e) {
+        return timeString;
     }
-    return timeString;
 }
 
-// Format currency
 function formatCurrency(amount) {
     if (!amount) return 'LKR 0.00';
     return `LKR ${parseFloat(amount).toFixed(2)}`;
 }
 
-// Get status badge class
 function getStatusBadgeClass(status) {
     if (!status) return 'status-badge';
     const statusMap = {
@@ -178,7 +246,8 @@ function getStatusBadgeClass(status) {
     return `status-badge ${statusMap[status] || ''}`;
 }
 
-// Show error message
+// ==================== UI HELPERS ====================
+
 function showError(elementId, message) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -190,7 +259,6 @@ function showError(elementId, message) {
     }
 }
 
-// Clear error message
 function clearError(elementId) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -199,12 +267,10 @@ function clearError(elementId) {
     }
 }
 
-// Show success message
 function showSuccess(message) {
     alert(message);
 }
 
-// Populate select dropdown
 function populateSelect(selectId, data, valueKey, textKey, defaultOption = 'Select...') {
     const select = document.getElementById(selectId);
     if (!select) return;
@@ -218,29 +284,28 @@ function populateSelect(selectId, data, valueKey, textKey, defaultOption = 'Sele
     });
 }
 
-// Check if user has admin role
+// ==================== ROLE CHECKS ====================
+
 function isAdmin() {
     const roleEl = document.getElementById('userRole');
-    if (roleEl) {
-        return roleEl.textContent === 'ADMIN';
-    }
-    return false;
+    return roleEl && roleEl.textContent.trim() === 'ADMIN';
 }
 
-// Check if user is dentist
 function isDentist() {
     const roleEl = document.getElementById('userRole');
-    if (roleEl) {
-        return roleEl.textContent === 'DENTIST';
-    }
-    return false;
+    return roleEl && roleEl.textContent.trim() === 'DENTIST';
 }
 
-// Toggle visibility of admin-only elements
-function toggleAdminElements() {
-    const adminOnly = document.querySelectorAll('.admin-only');
-    const isAdminUser = isAdmin();
-    adminOnly.forEach(el => {
-        el.style.display = isAdminUser ? '' : 'none';
-    });
+function isReceptionist() {
+    const roleEl = document.getElementById('userRole');
+    return roleEl && roleEl.textContent.trim() === 'RECEPTIONIST';
+}
+
+// ==================== LOADING ====================
+
+function showLoading(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+    }
 }
